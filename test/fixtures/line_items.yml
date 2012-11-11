@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  total_price: 1
+  quantity: 1
+  sweet_level: 1
+  owner: MyString
+
+two:
+  total_price: 1
+  quantity: 1
+  sweet_level: 1
+  owner: MyString
