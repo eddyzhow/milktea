@@ -1,8 +1,8 @@
 class OrdersController < ApplicationController
 	def index
-		@orders = Order.all
 		respond_to do |format|
-			format.json { render :json => @orders.to_json(
+			format.html
+			format.json { render :json => Order.all.to_json(
 				:include => { :line_items => { 
 					:include => { :drink => { :only => [:id, :name, :price] }, :toppings => { :only => [:id, :name, :price] } } ,
 					:only => [:total_price, :quantity, :sweet_level, :owner]} }, 
