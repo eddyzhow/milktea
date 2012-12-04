@@ -1,0 +1,33 @@
+<div style="margin-left:10px;margin-right:10px">
+	<div ng-repeat="order in orders">
+		<h4>Order of : {{order.order_date}}</h4>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Drink</th>
+					<th>Price</th>
+					<th>Total Price</th>
+					<th>Sweet Level</th>
+					<th>Quantity</th>
+					<th>Owner</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="line_item in order.line_items">
+				<tr>
+					<td rowspan="{{line_item.toppings.length + 1}}">{{$index + 1}}</td>
+					<td>{{line_item.drink.name}}</td>
+					<td>{{line_item.drink.price}}</td>
+					<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.total_price}}</td>
+					<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.sweet_level}}</td>
+					<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.quantity}}</td>
+					<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.owner}}</td>
+				</tr>
+				<tr ng-repeat="topping in line_item.toppings">
+					<td>{{topping.name}}</td>
+					<td>{{topping.price}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
