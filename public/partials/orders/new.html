@@ -1,0 +1,14 @@
+<div class="container">
+	<form class="form-horizontal">
+		<div class="control-group" ng-class="error_style">
+			<label class="control-label" for="orderDatePicker">Order of :</label>
+			<div class="controls">
+				<div class="input-append">
+					<input datepicker class="input-small" type="text" ng-model="order.order_date">
+					<button type="button" class="btn btn-primary" ng-click="create(order)">Create</button>				
+				</div>
+				<span class="help-inline">{{error_message_for_order}}</span>
+			</div>
+		</div>
+	</form>
+</div>

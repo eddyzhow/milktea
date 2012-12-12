@@ -13,6 +13,8 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap.min
+//= require bootstrap-datepicker
 //= require angular
 //= require angular-resource
+//= require moment.min
 //= require_tree .

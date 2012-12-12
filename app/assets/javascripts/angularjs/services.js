@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('milkteaServices', ['ngResource']).
 		factory('Orders', function($resource){
 	return $resource('/orders.json', {}, {

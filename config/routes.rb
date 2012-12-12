@@ -5,6 +5,6 @@ Milktea::Application.routes.draw do
 	resources :toppings, :only => [:index, :create, :show]
 
 	match 'orders/' => 'orders#index', :via => :get
+	match 'orders/' => 'orders#create', :via => :post
 	match 'orders/:order_date' => 'orders#show', :via => :get
-	match 'orders/:order_date' => 'orders#create', :via => :post
 end

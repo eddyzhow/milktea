@@ -43,7 +43,7 @@ class OrdersController < ApplicationController
 				:include => { :line_items => { 
 					:include => { :drink => { :only => [:id, :name, :price] }, :toppings => { :only => [:id, :name, :price] } } ,
 					:only => [:total_price, :quantity, :sweet_level, :owner]} }, 
-				:only => [:order_date]).html_safe, :status => :created, :location => @order }
+				:only => [:order_date]).html_safe, :status => :created }
 			else
 				format.json { render :json => @order.errors, :status => :unprocessable_entity }
 			end
