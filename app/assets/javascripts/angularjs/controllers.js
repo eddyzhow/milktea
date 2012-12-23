@@ -6,15 +6,13 @@ function OrderListCtrl($scope, Orders) {
 
 OrderListCtrl.$inject = ['$scope', 'Orders'];
 
-function OrderNewCtrl($rootScope, $scope, Orders){
+function OrderNewCtrl($rootScope, $scope, Orders, Order, Drinks, Toppings) {
 
-	$scope.order = {
-		order_date: moment().format('YYYY-MM-DD'),
-		line_items: []
-	};
+    $scope.order = new Order();
+    //$scope.order.order_date = moment().format('YYYY-MM-DD');
+    $scope.order.order_date = '2012-09-19';
 
 	$scope.create = function(order) {
-		console.log(order);
 		var o = new Orders(order);
 		o.$create(function(){},
 			function(order){
@@ -22,6 +20,9 @@ function OrderNewCtrl($rootScope, $scope, Orders){
 				$scope.error_style = 'error';
 			});
 	}
+
+    $scope.drinks = Drinks.index();
+    $scope.toppings = Toppings.index();
 }
 
-OrderNewCtrl.$inject = ['$rootScope', '$scope', 'Orders'];
+OrderNewCtrl.$inject = ['$rootScope', '$scope', 'Orders', 'Order', 'Drinks', 'Toppings'];

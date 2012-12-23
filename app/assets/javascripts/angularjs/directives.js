@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('milkteaDirectives', []).
-	directive('datepicker', function() {
+angular.module('milkteaDirectives', ['milkteaServices']).
+	directive('datepicker', ['LineItems', function(Order) {
 		return {
 			restrict: 'A',
 			link: function($scope, element, attrs, ctrl) {
@@ -15,8 +15,9 @@ angular.module('milkteaDirectives', []).
 				element.on('changeDate', function(ev){
 					$scope.$apply(function(){
 						$scope.order.order_date = moment(ev.date).format('YYYY-MM-DD');
+                        $scope.order.$show();
 					});
 				});
 			}	
 		}
-	});
+	}]);
