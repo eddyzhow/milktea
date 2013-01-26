@@ -8,13 +8,14 @@ angular.module('milkteaServices', ['ngResource']).
         });
     }).
     factory('Order', function($resource) {
-        return $resource('/orders/:order_date.json', { order_date: '@order_date' }, {
+        return $resource('/orders/:order_date.json', {}, {
             show: { method: 'GET' }
         })
     }).
     factory('LineItems', function($resource) {
-        return $resource('/orders/:order_date/line_items.json', {}, {
-            index: { method: 'GET', isArray: true }
+        return $resource('/orders/:order_date/line_items.json', {order_date: '@order_date'}, {
+            index: { method: 'GET', isArray: true },
+            create: { method: 'POST' }
         });
     }).
     factory('Drinks', function($resource) {

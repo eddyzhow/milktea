@@ -40,7 +40,7 @@ class OrdersController < ApplicationController
 
 	def show
 		order_date = Date.strptime(params[:order_date])
-		order = Order.find_by_order_date(order_date)
+		order = Order.find_by_order_date!(order_date)
 		respond_to do |format|
 			format.json { render :json => order.to_json(
 				:include => { :line_items => { 
