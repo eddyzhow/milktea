@@ -12,17 +12,17 @@
 				<th>Owner</th>
 			</tr>
 		</thead>
-		<tbody ng-repeat="line_item in order.line_items">
+		<tbody ng-repeat="lineItem in order.lineItems">
 			<tr>
-				<td rowspan="{{line_item.toppings.length + 1}}">{{$index + 1}}</td>
-				<td>{{line_item.drink.name}}</td>
-				<td>{{line_item.drink.price}}</td>
-				<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.total_price}}</td>
-				<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.sweet_level}}</td>
-				<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.quantity}}</td>
-				<td rowspan="{{line_item.toppings.length + 1}}">{{line_item.owner}}</td>
+				<td rowspan="{{lineItem.toppings.length + 1}}">{{$index + 1}}</td>
+				<td>{{lineItem.drink.name}}</td>
+				<td>{{lineItem.drink.price}}</td>
+				<td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.totalPrice}}</td>
+				<td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.sweetLevel}}</td>
+				<td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.quantity}}</td>
+				<td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.owner}}</td>
 			</tr>
-			<tr ng-repeat="topping in line_item.toppings">
+			<tr ng-repeat="topping in lineItem.toppings">
 				<td>{{topping.name}}</td>
 				<td>{{topping.price}}</td>
 			</tr>

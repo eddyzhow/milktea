@@ -14,23 +14,23 @@ function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
     $scope.toppings = Toppings.index();
 
     $scope.defaultLineItem = function(date) {
-        $scope.line_item = new LineItems({order_date: date, toppings: []});
-        $scope.line_item.sweet_level = 3;
-        $scope.line_item.quantity = 1;
+        $scope.lineItem = new LineItems({orderDate: date, toppings: []});
+        $scope.lineItem.sweetLevel = 3;
+        $scope.lineItem.quantity = 1;
     };
 
     $scope.defaultLineItem(today);
 
     $scope.showOrder = function(date) {
-        $scope.order = Order.show({ order_date: date },
+        $scope.order = Order.show({ orderDate: date },
             function() {
                 $scope.isShowOrder = true;
-                $scope.line_item.order_date = date;
+                $scope.lineItem.orderDate = date;
             },
             function() {
                 $scope.isShowOrder = false;
-                $scope.order.order_date = date;
-                $scope.order.line_items = [];
+                $scope.order.orderDate = date;
+                $scope.order.lineItems = [];
             });
     }
 
@@ -40,8 +40,7 @@ function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
 		var o = new Orders(order);
 		o.$create(
             function(order){
-                $scope.showOrder(order.order_date);
-                $scope.isShowOrder = true;
+                $scope.showOrder(order.orderDate);
             },
 			function(order){
 				$scope.error_message_for_order = order.data.order_date[0];
@@ -49,31 +48,31 @@ function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
 			});
 	}
 
-    $scope.calculateTotalPrice = function(line_item) {
-        var total_price = 0;
-        if(angular.isDefined(line_item.drink)){
-            total_price = total_price + line_item.drink.price;
+    $scope.calculateTotalPrice = function(lineItem) {
+        var totalPrice = 0;
+        if(angular.isDefined(lineItem.drink)){
+            totalPrice = totalPrice + lineItem.drink.price;
         }
-        angular.forEach(line_item.toppings, function(topping) {
-            total_price = total_price + topping.price;
+        angular.forEach(lineItem.toppings, function(topping) {
+            totalPrice = totalPrice + topping.price;
         });
-        $scope.line_item.total_price = total_price*line_item.quantity;
+        $scope.lineItem.totalPrice = totalPrice*lineItem.quantity;
     }
 
     $scope.addTopping = function(topping) {
         if(angular.isDefined(topping)) {
-            $scope.line_item.toppings.push(topping);
+            $scope.lineItem.toppings.push(topping);
         }
-        $scope.calculateTotalPrice($scope.line_item);
+        $scope.calculateTotalPrice($scope.lineItem);
         $scope.topping = '';
     }
 
-    $scope.createLineItem = function(line_item) {
-        var line_item_date = line_item.order_date;
-        line_item.$create(
-            function(created_line_item) {
-                $scope.order.line_items.push(created_line_item);
-                $scope.defaultLineItem(line_item_date);
+    $scope.createLineItem = function(lineItem) {
+        var lineItemDate = lineItem.orderDate;
+        lineItem.$create(
+            function(createdLineItem) {
+                $scope.order.lineItems.push(createdLineItem);
+                $scope.defaultLineItem(lineItemDate);
                 $scope.drink = '';
                 $scope.topping = '';
             },
