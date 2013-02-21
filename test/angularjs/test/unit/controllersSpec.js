@@ -6,7 +6,7 @@ describe('MilkTea Controller', function () {
     beforeEach(module('milkteaServices'));
 
     describe('OrderNewCtrl', function () {
-        var scope, orderNewCtrl, $controller, $httpBackend, today;
+        var scope, orderNewCtrl, $controller, $httpBackend, today, $resource;
 
         var drinks = [
             {
@@ -39,11 +39,12 @@ describe('MilkTea Controller', function () {
             }
         ];
 
-        beforeEach(inject(function ($rootScope, _$controller_, _$httpBackend_) {
+        beforeEach(inject(function ($rootScope, _$controller_, _$httpBackend_, _$resource_) {
             today = moment().format('YYYY-MM-DD');
             scope = $rootScope.$new();
             $controller = _$controller_;
             $httpBackend = _$httpBackend_;
+            $resource = _$resource_;
 
             $httpBackend.whenGET('/drinks.json').
                 respond(drinks);
@@ -61,23 +62,53 @@ describe('MilkTea Controller', function () {
         }));
 
         function createOrderAndSuccess(date) {
-            $httpBackend.whenPOST('/orders.json').respond({"orderDate":date});
+            var order = {
+                order_date:date
+            };
+            $httpBackend.whenPOST('/orders.json', order).respond({"orderDate":date});
+            $httpBackend.whenGET('/orders/' + date + '.json').respond({"orderDate":date});
         }
+
+        function createOrderAndDuplicateOrderDate(date) {
+            var order = {
+                order_date:date
+            };
+            $httpBackend.whenPOST('/orders.json', order).respond(422 ,{"errors":{"orderDate":['Order date has already been taken.']}});
+        }
+
+        it('should show error when created order date already exist in the system', function () {
+            createOrderAndDuplicateOrderDate(today);
+            scope.create({"orderDate":today});
+            $httpBackend.flush();
+            expect(scope.orderErrorMessage).toBe('Order date has already been taken.');
+            expect(scope.errorStyle).toBe('error');
+        });
 
         it('should show created order when order is created', function () {
             createOrderAndSuccess(today);
             scope.create({"orderDate":today});
+            expect(scope.isShowOrder).toBe(undefined);
             $httpBackend.flush();
-            $httpBackend.whenGET('/orders/' + today + '.json').respond({"orderDate":today});
             expect(scope.isShowOrder).toBe(true);
         });
 
-        it('should set $scope.lineItem.orderDate to the date of the created order when order is create for further further creation of line item', function () {
+        it('should reset error message and style when order can be created', function () {
+            scope.errorStyle = 'error';
+            scope.orderErrorMessage = 'Order date has already been taken.';
             createOrderAndSuccess(today);
             scope.create({"orderDate":today});
             $httpBackend.flush();
-            $httpBackend.whenGET('/orders/' + today + '.json').respond({"orderDate":today});
+            expect(scope.errorStyle).toBe('');
+            expect(scope.orderErrorMessage).toBe('');
+        });
+
+        it('should set $scope.lineItem.orderDate to the date of the created order when order is create for further further creation of line item', function () {
+            var date = '2012-01-06';
+            createOrderAndSuccess(date);
+            scope.create({"orderDate":date});
             expect(scope.lineItem.orderDate).toBe(today);
+            $httpBackend.flush();
+            expect(scope.lineItem.orderDate).toBe(date);
         });
 
         it('should show order when there is an order of that specific date', function () {
@@ -262,6 +293,27 @@ describe('MilkTea Controller', function () {
             scope.createLineItem(scope.lineItem);
             $httpBackend.flush();
             expect(scope.isShowCreateLineItemErrors).toBe(true);
+        });
+
+        it('should have transform request functionality (included in 1.1.2)', function () {
+            var Person = $resource('/Person/:id', {}, {
+                save: {
+                    method: 'POST',
+                    params: {id: '@id'},
+                    transformRequest: function(data) {
+                        return angular.toJson({ __id: data.id });
+                    },
+                    transformResponse: function(data) {
+                        return { id: data.__id };
+                    }
+                }
+            });
+
+            $httpBackend.expect('POST', '/Person/123', { __id: 123 }).respond({ __id: 456 });
+            var person = new Person({id:123});
+            person.$save();
+            $httpBackend.flush();
+            expect(person.id).toEqual(456);
         });
     })
 })

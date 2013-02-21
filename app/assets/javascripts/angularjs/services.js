@@ -2,30 +2,18 @@
 
 angular.module('milkteaServices', ['ngResource']).
 	factory('Orders', function($resource) {
-        /*
         return $resource('/orders.json', {}, {
             index: { method: 'GET', isArray: true },
-            create: { method: 'POST' }
+            create: {
+                method: 'POST',
+                transformRequest: function(data) {
+                    return angular.toJson({
+                        order_date:data.orderDate,
+                        line_items:data.lineItems
+                    });
+                }
+            }
         });
-        */
-
-        var resource = $resource('/orders.json');
-
-        resource.prototype.$index = function(data, success, error) {
-            resource.order_date = resource.orderDate;
-            console.log(resource.orderDate);
-            //resource.line_items = resource.lineItems;
-            return resource.query(data, success, error);
-        }
-
-        resource.prototype.$create = function(data, success, error) {
-            resource.order_date = resource.orderDate;
-            console.log(resource.order);
-            //resource.line_items = resource.lineItems;
-            return resource.save(data, success, error);
-        }
-
-        return resource;
     }).
     factory('Order', function($resource) {
         return $resource('/orders/:orderDate.json', {}, {
@@ -35,7 +23,20 @@ angular.module('milkteaServices', ['ngResource']).
     factory('LineItems', function($resource) {
         return $resource('/orders/:orderDate/line_items.json', {orderDate: '@orderDate'}, {
             index: { method: 'GET', isArray: true },
-            create: { method: 'POST' }
+            create: {
+                method: 'POST',
+                transformRequest: function(data) {
+                    return angular.toJson({
+                        drink:data.drink,
+                        toppings:data.toppings,
+                        order_date:data.orderDate,
+                        sweet_level:data.sweetLevel,
+                        total_price:data.totalPrice,
+                        quantity:data.quantity,
+                        owner:data.owner
+                    });
+                }
+            }
         });
     }).
     factory('Drinks', function($resource) {

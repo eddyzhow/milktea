@@ -41,10 +41,12 @@ function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
 		o.$create(
             function(order){
                 $scope.showOrder(order.orderDate);
+                $scope.orderErrorMessage = '';
+                $scope.errorStyle = '';
             },
-			function(order){
-				$scope.error_message_for_order = order.data.order_date[0];
-				$scope.error_style = 'error';
+			function(errors){
+				$scope.orderErrorMessage = errors.data.errors.orderDate[0];
+				$scope.errorStyle = 'error';
 			});
 	}
 
@@ -76,7 +78,7 @@ function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
                 $scope.drink = '';
                 $scope.topping = '';
             },
-            function() {
+            function(errors) {
                 $scope.isShowCreateLineItemErrors = true;
             }
         );

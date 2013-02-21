@@ -4,7 +4,7 @@ if @order.errors.empty?
   extends "orders/base"
 else
   node :errors do |o|
-    o.errors
+    camelize_hash_key(o.errors.as_json)
   end
 end
 
