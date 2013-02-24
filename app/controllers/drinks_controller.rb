@@ -14,4 +14,10 @@ class DrinksController < ApplicationController
   def show
     @drink = Drink.find(params[:id])
   end
+
+  def destroy
+    @drink = Drink.find(params[:id])
+    @drink.destroy
+    render :nothing => true
+  end
 end

@@ -1,0 +1,44 @@
+<div class="container">
+    <h4>Drinks :</h4>
+    <div class="alert alert-error" ng-show="drink.errors">
+        <h5>Oh snap!</h5>
+        <ul>
+            <li ng-show="drink.errors.name" ng-repeat="error in drink.errors.name">Drink name {{error}}.</li>
+            <li ng-show="drink.errors.price" ng-repeat="error in drink.errors.price">Price {{error}}.</li>
+        </ul>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Drink</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody ng-repeat="drink in drinks">
+        <tr>
+            <td>{{$index+1}}</td>
+            <td>{{drink.name}}</td>
+            <td>{{drink.price}}</td>
+            <td>
+                <button type="button" class="btn btn-danger" ng-click="delete($index)">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+        <tbody>
+        <tr>
+            <td>{{drinks.length+1}}</td>
+            <td>
+                <input class="input-large" ng-model="drink.name" type="text" placeholder="Drink Name">
+            </td>
+            <td>
+                <input class="input-mini" ng-model="drink.price" type="text" placeholder="Price">
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" ng-click="create(drink)">Add</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

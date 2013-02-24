@@ -5,5 +5,6 @@ angular.module('milktea', ['milkteaServices', 'milkteaDirectives']).
   $routeProvider.
     when('/', {templateUrl: 'partials/orders/index.html', controller: OrderListCtrl}).
     when('/orders/new', {templateUrl: 'partials/orders/new.html', controller: OrderNewCtrl}).
+    when('/drinks/new', {templateUrl: 'partials/drinks/new.html', controller: DrinkNewCtrl}).
     otherwise({redirectTo: '/'});
 }]);

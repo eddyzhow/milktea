@@ -5,39 +5,47 @@ describe('MilkTea Controller', function () {
 
     beforeEach(module('milkteaServices'));
 
+    beforeEach(function(){
+        this.addMatchers({
+            toEqualData: function(expected) {
+                return angular.equals(this.actual, expected);
+            }
+        });
+    });
+
+    var drinks = [
+        {
+            "id":1,
+            "name":"Milk Tea",
+            "price":30
+        },
+        {
+            "id":2,
+            "name":"Black Tea",
+            "price":25
+        }
+    ];
+
+    var toppings = [
+        {
+            "id":1,
+            "name":"Bubble",
+            "price":5
+        },
+        {
+            "id":2,
+            "name":"Pudding",
+            "price":5
+        },
+        {
+            "id":3,
+            "name":"Whip Cream",
+            "price":5
+        }
+    ];
+
     describe('OrderNewCtrl', function () {
         var scope, orderNewCtrl, $controller, $httpBackend, today, $resource;
-
-        var drinks = [
-            {
-                "id":1,
-                "name":"Milk Tea",
-                "price":30
-            },
-            {
-                "id":2,
-                "name":"Black Tea",
-                "price":25
-            }
-        ];
-
-        var toppings = [
-            {
-                "id":1,
-                "name":"Bubble",
-                "price":5
-            },
-            {
-                "id":2,
-                "name":"Pudding",
-                "price":5
-            },
-            {
-                "id":3,
-                "name":"Whip Cream",
-                "price":5
-            }
-        ];
 
         beforeEach(inject(function ($rootScope, _$controller_, _$httpBackend_, _$resource_) {
             today = moment().format('YYYY-MM-DD');
@@ -168,7 +176,7 @@ describe('MilkTea Controller', function () {
                         "price":5
                     }
                 ]
-            }
+            };
             scope.calculateTotalPrice(lineItem);
             expect(scope.lineItem.totalPrice).toBe(40);
         });
@@ -186,7 +194,7 @@ describe('MilkTea Controller', function () {
                     "price":30
                 },
                 "toppings":[]
-            }
+            };
             scope.calculateTotalPrice(lineItem);
             expect(scope.lineItem.totalPrice).toBe(30);
         });
@@ -211,7 +219,7 @@ describe('MilkTea Controller', function () {
                         "price":5
                     }
                 ]
-            }
+            };
             scope.calculateTotalPrice(lineItem);
             expect(scope.lineItem.totalPrice).toBe(10);
         });
@@ -240,7 +248,7 @@ describe('MilkTea Controller', function () {
                         "price":5
                     }
                 ]
-            }
+            };
             scope.calculateTotalPrice(lineItem);
             expect(scope.lineItem.totalPrice).toBe(120);
         });
@@ -284,7 +292,7 @@ describe('MilkTea Controller', function () {
         });
 
         function createLineItemAndFail(date) {
-            $httpBackend.whenPOST('/orders/' + date + '/line_items.json').respond(404, { "some key":"some error"});
+            $httpBackend.whenPOST('/orders/' + date + '/line_items.json').respond(422, { "some key":"some error"});
         }
 
         it('should show error message sending from backend when cannot new create line item', function () {
@@ -315,5 +323,122 @@ describe('MilkTea Controller', function () {
             $httpBackend.flush();
             expect(person.id).toEqual(456);
         });
+    });
+
+    describe('DrinkNewCtrl', function () {
+        var scope, $controller, drinkNewCtrl, $httpBackend;
+
+        var newDrink = {
+                "name": 'new drink',
+                "price": 50
+        };
+
+        beforeEach(inject(function ($rootScope, _$controller_, _$httpBackend_) {
+            scope = $rootScope.$new();
+            $controller = _$controller_;
+            $httpBackend = _$httpBackend_;
+
+            $httpBackend.whenGET('/drinks.json').
+                respond(drinks);
+
+            drinkNewCtrl = $controller(DrinkNewCtrl, {$scope:scope});
+        }));
+
+        it('should show all drinks', function () {
+            expect(scope.drinks).toEqual([]);
+            $httpBackend.flush();
+            expect(scope.drinks).toEqualData(drinks);
+        });
+
+        function createDrinkAndSuccess (drink) {
+            var respondDrink = angular.copy(drink);
+            respondDrink.id = 1;
+            $httpBackend.expectPOST('/drinks.json', drink).respond(200, respondDrink);
+        }
+
+        it('can create drink', function () {
+            createDrinkAndSuccess(newDrink);
+            scope.create(newDrink);
+            $httpBackend.flush();
+        });
+
+        it('should update drink list after create drink', function () {
+            $httpBackend.flush();
+            createDrinkAndSuccess(newDrink);
+            var drinksLengthBeforeCreate = scope.drinks.length;
+            scope.create(newDrink);
+            $httpBackend.flush();
+            var drinksLengthAfterCreate = scope.drinks.length;
+            expect(drinksLengthAfterCreate).toEqual(drinksLengthBeforeCreate+1);
+            expect(scope.drinks[scope.drinks.length-1].name).toEqualData(newDrink.name);
+        });
+
+        it('should hide error after drink is created successfully', function () {
+            $httpBackend.flush();
+            createDrinkAndSuccess(newDrink);
+            scope.create(newDrink);
+            $httpBackend.flush();
+            expect(scope.drink.error).toBeUndefined();
+        });
+
+        it('should reset drink model after drink is created successfully', function () {
+            $httpBackend.flush();
+            createDrinkAndSuccess(newDrink);
+            scope.create(newDrink);
+            $httpBackend.flush();
+            expect(scope.drink).toEqual({});
+        });
+
+        function createDrinkAndFail (drink, errors) {
+            $httpBackend.whenPOST('/drinks.json', drink).respond(422, errors);
+        }
+
+        it('should show drink error when creating drink already exist in the drink list', function () {
+            var drinkErrors = {
+                "errors": {
+                    "name": ["has already been taken"]
+                }
+            };
+            createDrinkAndFail(newDrink, drinkErrors);
+            scope.create(newDrink);
+            $httpBackend.flush();
+            expect(scope.drink.errors.name).toEqual(drinkErrors.errors.name);
+        });
+
+        it('should show drink error when creating drink has invalid price format', function () {
+            var drinkErrors = {
+                "errors": {
+                    "price": ["is not a number"]
+                }
+            };
+            createDrinkAndFail(newDrink, drinkErrors);
+            scope.create(newDrink);
+            $httpBackend.flush();
+            expect(scope.drink.errors.price).toEqual(drinkErrors.errors.price);
+        });
+
+        function deleteDrinkAndSuccess(drinkId) {
+            $httpBackend.expectDELETE('/drinks/' + drinkId + '.json').respond(200);
+        }
+
+        var drinkId = 1;
+        var drinksIndex = 0;
+
+        it('can delete drink', function () {
+            $httpBackend.flush();
+            deleteDrinkAndSuccess(drinkId);
+            scope.delete(drinksIndex);
+            $httpBackend.flush();
+        });
+
+        it('should update drink list after delete drink', function () {
+            $httpBackend.flush();
+            deleteDrinkAndSuccess(drinkId);
+            var drinksLengthBeforeDelete = scope.drinks.length;
+            scope.delete(drinksIndex);
+            $httpBackend.flush();
+            var drinkLengthAfterDelete = scope.drinks.length;
+            expect(drinkLengthAfterDelete).toEqual(drinksLengthBeforeDelete-1);
+        });
     })
-})
+});

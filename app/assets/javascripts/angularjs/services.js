@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('milkteaServices', ['ngResource']).
-	factory('Orders', function($resource) {
+    factory('Orders',function ($resource) {
         return $resource('/orders.json', {}, {
-            index: { method: 'GET', isArray: true },
-            create: {
-                method: 'POST',
-                transformRequest: function(data) {
+            index:{ method:'GET', isArray:true },
+            create:{
+                method:'POST',
+                transformRequest:function (data) {
                     return angular.toJson({
                         order_date:data.orderDate,
                         line_items:data.lineItems
@@ -15,17 +15,17 @@ angular.module('milkteaServices', ['ngResource']).
             }
         });
     }).
-    factory('Order', function($resource) {
+    factory('Order',function ($resource) {
         return $resource('/orders/:orderDate.json', {}, {
-            show: { method: 'GET' }
+            show:{ method:'GET' }
         })
     }).
-    factory('LineItems', function($resource) {
-        return $resource('/orders/:orderDate/line_items.json', {orderDate: '@orderDate'}, {
-            index: { method: 'GET', isArray: true },
-            create: {
-                method: 'POST',
-                transformRequest: function(data) {
+    factory('LineItems',function ($resource) {
+        return $resource('/orders/:orderDate/line_items.json', {orderDate:'@orderDate'}, {
+            index:{ method:'GET', isArray:true },
+            create:{
+                method:'POST',
+                transformRequest:function (data) {
                     return angular.toJson({
                         drink:data.drink,
                         toppings:data.toppings,
@@ -39,13 +39,19 @@ angular.module('milkteaServices', ['ngResource']).
             }
         });
     }).
-    factory('Drinks', function($resource) {
+    factory('Drinks',function ($resource) {
         return $resource('/drinks.json', {}, {
-            index: { method: 'GET', isArray: true }
+            index:{ method:'GET', isArray:true },
+            create:{ method:'POST' }
         })
     }).
-    factory('Toppings', function($resource) {
+    factory('Drink',function ($resource) {
+        return $resource('/drinks/:id.json', {}, {
+            destroy:{ method:'DELETE' }
+        })
+    }).
+    factory('Toppings', function ($resource) {
         return $resource('/toppings.json', {}, {
-            index: { method: 'GET', isArray: true }
+            index:{ method:'GET', isArray:true }
         })
     });

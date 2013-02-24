@@ -43,7 +43,7 @@
         </tbody>
         <tbody>
         <tr>
-            <td rowspan="{{lineItem.toppings.length + 2}}">{{order.lineItem.length + 1}}</td>
+            <td rowspan="{{lineItem.toppings.length + 2}}">{{order.lineItems.length + 1}}</td>
             <td>
                 <div class="input-append">
                     <select class="input-large" ng-model="lineItem.drink" ng-options="drink.name for drink in drinks" ng-change="calculateTotalPrice(lineItem)">
@@ -82,38 +82,5 @@
         </tbody>
     </table>
     </div>
-
-
-    <!--
-    <select ng-model="line_item.drink" ng-options="drink.name for drink in drinks" ng-change="calculateTotalPrice(line_item)">
-        <option value="">Choose Your Drink...</option>
-    </select>
-    <select ng-model="topping" ng-options="topping.name for topping in toppings">
-        <option value="">Add Some Topping...</option>
-    </select>
-    <input ng-model="line_item.owner" type="text" placeholder="Owner">
-    <input ng-model="line_item.quantity" type="text" placeholder="Quantity" ng-change="calculateTotalPrice(line_item)">
-    <select ng-model="line_item.sweet_level" ng-options="sweet_level for sweet_level in [1, 2, 3, 4, 5]"></select>
-    <button type="button" class="btn btn-success" ng-click="addTopping(topping)">Add Topping</button>
-    <button type="button" class="btn btn-primary" ng-click="createLineItem(line_item)">Add Item</button>
-    -->
-
-    <!--
-    <div>{{line_item}}</div>
-    <div>{{line_item.owner}}</div>
-    <div>{{line_item.sweet_level}}</div>
-    <div>{{line_item.total_price}}</div>
-    <div>{{line_item.drink.name}}</div>
-    <div>{{line_item.drink.price}}</div>
-    <div ng-repeat="topping in line_item.toppings">
-        <ul>
-            <li>{{topping.name}} : {{topping.price}} </li>
-        </ul>
-    </div>
-    <div ng-repeat="line_item in line_items">
-        <ul>
-            <li>{{line_item.drink.name}}</li>
-        </ul>
-    </div>
-    -->
+    {{order.lineItem.length}}
 </div>
