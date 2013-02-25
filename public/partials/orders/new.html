@@ -31,6 +31,7 @@
                 <th>Sweet Level</th>
                 <th>Quantity</th>
                 <th>Owner</th>
+                <th></th>
             </tr>
             </thead>
             <tbody ng-repeat="lineItem in order.lineItems">
@@ -42,6 +43,9 @@
                 <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.sweetLevel}}</td>
                 <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.quantity}}</td>
                 <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.owner}}</td>
+                <td rowspan="{{lineItem.toppings.length + 1}}">
+                    <button type="button" class="btn btn-danger" ng-click="deleteLineItem($index)">x</button>
+                </td>
             </tr>
             <tr ng-repeat="topping in lineItem.toppings">
                 <td>{{topping.name}}</td>
@@ -74,6 +78,7 @@
                 <td rowspan="{{lineItem.toppings.length + 2}}">
                     <input class="input-medium" ng-model="lineItem.owner" type="text" placeholder="Owner">
                 </td>
+                <td rowspan="{{lineItem.toppings.length + 2}}"></td>
             </tr>
             <tr ng-repeat="topping in lineItem.toppings">
                 <td>{{topping.name}}</td>

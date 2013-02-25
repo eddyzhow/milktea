@@ -39,6 +39,11 @@ angular.module('milkteaServices', ['ngResource']).
             }
         });
     }).
+    factory('LineItem',function ($resource) {
+        return $resource('/orders/:orderDate/line_items/:id.json', {orderDate:'@orderDate'}, {
+            destroy: { method:'DELETE' }
+        });
+    }).
     factory('Drinks',function ($resource) {
         return $resource('/drinks.json', {}, {
             index:{ method:'GET', isArray:true },
@@ -50,7 +55,7 @@ angular.module('milkteaServices', ['ngResource']).
             destroy:{ method:'DELETE' }
         })
     }).
-    factory('Toppings', function ($resource) {
+    factory('Toppings',function ($resource) {
         return $resource('/toppings.json', {}, {
             index:{ method:'GET', isArray:true },
             create:{ method:'POST' }

@@ -63,7 +63,32 @@ describe('MilkTea Controller', function () {
             $httpBackend.whenGET('/orders/' + today + '.json').
                 respond({
                     orderDate:today,
-                    lineItems:[]
+                    lineItems:[
+                        {
+                            "id":1,
+                            "owner":"Eddy",
+                            "quantity":1,
+                            "sweetLevel":3,
+                            "totalPrice":40,
+                            "drink":{
+                                "id":1,
+                                "name":"Milk Tea",
+                                "price":30
+                            },
+                            "toppings":[
+                                {
+                                    "id":1,
+                                    "name":"Bubble",
+                                    "price":5
+                                },
+                                {
+                                    "id":2,
+                                    "name":"Pudding",
+                                    "price":5
+                                }
+                            ]
+                        }
+                    ]
                 });
 
             orderNewCtrl = $controller(OrderNewCtrl, {$scope:scope});
@@ -315,6 +340,30 @@ describe('MilkTea Controller', function () {
             scope.createLineItem(scope.lineItem);
             $httpBackend.flush();
             expect(scope.lineItem.errors).toBeDefined();
+        });
+
+        function deleteLineItemAndSuccess(date, lineItemId) {
+            $httpBackend.expectDELETE('/orders/' + date + '/line_items/' + lineItemId + '.json').respond(200);
+        }
+
+        var lineItemId = 1;
+        var lineItemIndex = 0;
+
+        it('can delete line item', function () {
+            $httpBackend.flush();
+            deleteLineItemAndSuccess(today, lineItemId);
+            scope.deleteLineItem(lineItemIndex);
+            $httpBackend.flush();
+        });
+
+        it('should update line item list after delete line item', function () {
+            $httpBackend.flush();
+            deleteLineItemAndSuccess(today, lineItemId);
+            var lineItemsLengthBeforeDelete = scope.order.lineItems.length;
+            scope.deleteLineItem(lineItemIndex);
+            $httpBackend.flush();
+            var lineItemsLengthAfterDelete = scope.order.lineItems.length;
+            expect(lineItemsLengthAfterDelete).toEqual(lineItemsLengthBeforeDelete - 1);
         });
 
         it('should have transform request functionality (included in 1.1.2)', function () {

@@ -10,6 +10,6 @@ Milktea::Application.routes.draw do
 	match 'orders/:order_date' => 'orders#show', :via => :get
 
 	namespace :orders, :path => 'orders/:order_date' do
-		resources :line_items, :only => [:index, :create]
+		resources :line_items, :only => [:index, :create, :destroy]
 	end
 end

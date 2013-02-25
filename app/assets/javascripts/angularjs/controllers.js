@@ -6,7 +6,7 @@ function OrderListCtrl($scope, Orders) {
 
 OrderListCtrl.$inject = ['$scope', 'Orders'];
 
-function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
+function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems, LineItem) {
 
     var today = moment().format('YYYY-MM-DD');
 
@@ -83,9 +83,16 @@ function OrderNewCtrl($scope, Orders, Order, Drinks, Toppings, LineItems) {
             }
         );
     }
+
+    $scope.deleteLineItem = function (lineItemIndex) {
+        var lineItemId = $scope.order.lineItems[lineItemIndex].id;
+        LineItem.delete({orderDate: $scope.order.orderDate, id: lineItemId}, function () {
+            $scope.order.lineItems.splice(lineItemIndex,1);
+        });
+    }
 }
 
-OrderNewCtrl.$inject = ['$scope', 'Orders', 'Order', 'Drinks', 'Toppings', 'LineItems'];
+OrderNewCtrl.$inject = ['$scope', 'Orders', 'Order', 'Drinks', 'Toppings', 'LineItems', 'LineItem'];
 
 function DrinkNewCtrl($scope, Drinks, Drink) {
     $scope.drinks = Drinks.index();
