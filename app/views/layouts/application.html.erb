@@ -2,23 +2,24 @@
 <html lang="en" ng-app="milktea">
 <head>
   <title>Milktea</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= stylesheet_link_tag "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <div class="container">
-	  <div class="navbar" style="margin-top:5px">
-  		<div class="navbar-inner">
-      		<a class="brand" href="#">goo.TEA<i class="icon-leaf"></i></a>
-      		<ul class="nav">
-        			<li><a href="#">Home</a></li>
-              <li><a href="#/orders/new">Order a Tea!</a></li>
-              <li><a href="#/drinks/new">Add New Drink</a></li>
-      		</ul>
-        </div>
-  		</div>
-	   <%= yield %>
+<div class="container">
+  <div class="navbar" style="margin-top:5px">
+    <div class="navbar-inner">
+      <a class="brand" href="#">goo.TEA<i class="icon-leaf"></i></a>
+      <ul class="nav">
+        <li><a href="#">Home</a></li>
+        <li><a href="#/orders/new">Order a Tea!</a></li>
+        <li><a href="#/drinks/new">Add New Drink</a></li>
+        <li><a href="#/toppings/new">Add New Topping</a></li>
+      </ul>
+    </div>
   </div>
+  <%= yield %>
+</div>
 </body>
 </html>

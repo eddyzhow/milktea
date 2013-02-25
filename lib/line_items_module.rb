@@ -6,12 +6,18 @@ module LineItemsModule
       toppings << Topping.find(t[:id])
     end
 
+    if li[:drink].nil?
+      drink = nil
+    else
+      drink = Drink.find(li[:drink][:id])
+    end
+
     line_item = LineItem.new(
         :owner => li[:owner],
         :quantity => li[:quantity],
         :sweet_level => li[:sweet_level],
         :total_price => li[:total_price],
-        :drink => Drink.find(li[:drink][:id]),
+        :drink => drink,
         :toppings => toppings
     )
   end

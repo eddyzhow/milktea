@@ -5,9 +5,9 @@ describe('MilkTea Controller', function () {
 
     beforeEach(module('milkteaServices'));
 
-    beforeEach(function(){
+    beforeEach(function () {
         this.addMatchers({
-            toEqualData: function(expected) {
+            toEqualData:function (expected) {
                 return angular.equals(this.actual, expected);
             }
         });
@@ -81,7 +81,7 @@ describe('MilkTea Controller', function () {
             var order = {
                 order_date:date
             };
-            $httpBackend.whenPOST('/orders.json', order).respond(422 ,{"errors":{"orderDate":['Order date has already been taken.']}});
+            $httpBackend.whenPOST('/orders.json', order).respond(422, {"errors":{"orderDate":['Order date has already been taken.']}});
         }
 
         it('should show error when created order date already exist in the system', function () {
@@ -292,7 +292,21 @@ describe('MilkTea Controller', function () {
         });
 
         function createLineItemAndFail(date) {
-            $httpBackend.whenPOST('/orders/' + date + '/line_items.json').respond(422, { "some key":"some error"});
+            var returnErrors = {
+                "errors":{
+                    "owner":[
+                        "can't be blank"
+                    ],
+                    "quantity":[
+                        "can't be blank",
+                        "is not a number"
+                    ],
+                    "total_price":[
+                        "is not equal to sum of drink and toppings."
+                    ]
+                }
+            };
+            $httpBackend.whenPOST('/orders/' + date + '/line_items.json').respond(422, returnErrors);
         }
 
         it('should show error message sending from backend when cannot new create line item', function () {
@@ -300,24 +314,24 @@ describe('MilkTea Controller', function () {
             createLineItemAndFail(today);
             scope.createLineItem(scope.lineItem);
             $httpBackend.flush();
-            expect(scope.isShowCreateLineItemErrors).toBe(true);
+            expect(scope.lineItem.errors).toBeDefined();
         });
 
         it('should have transform request functionality (included in 1.1.2)', function () {
             var Person = $resource('/Person/:id', {}, {
-                save: {
-                    method: 'POST',
-                    params: {id: '@id'},
-                    transformRequest: function(data) {
-                        return angular.toJson({ __id: data.id });
+                save:{
+                    method:'POST',
+                    params:{id:'@id'},
+                    transformRequest:function (data) {
+                        return angular.toJson({ __id:data.id });
                     },
-                    transformResponse: function(data) {
-                        return { id: data.__id };
+                    transformResponse:function (data) {
+                        return { id:data.__id };
                     }
                 }
             });
 
-            $httpBackend.expect('POST', '/Person/123', { __id: 123 }).respond({ __id: 456 });
+            $httpBackend.expect('POST', '/Person/123', { __id:123 }).respond({ __id:456 });
             var person = new Person({id:123});
             person.$save();
             $httpBackend.flush();
@@ -329,8 +343,8 @@ describe('MilkTea Controller', function () {
         var scope, $controller, drinkNewCtrl, $httpBackend;
 
         var newDrink = {
-                "name": 'new drink',
-                "price": 50
+            "name":'new drink',
+            "price":50
         };
 
         beforeEach(inject(function ($rootScope, _$controller_, _$httpBackend_) {
@@ -350,7 +364,7 @@ describe('MilkTea Controller', function () {
             expect(scope.drinks).toEqualData(drinks);
         });
 
-        function createDrinkAndSuccess (drink) {
+        function createDrinkAndSuccess(drink) {
             var respondDrink = angular.copy(drink);
             respondDrink.id = 1;
             $httpBackend.expectPOST('/drinks.json', drink).respond(200, respondDrink);
@@ -369,8 +383,8 @@ describe('MilkTea Controller', function () {
             scope.create(newDrink);
             $httpBackend.flush();
             var drinksLengthAfterCreate = scope.drinks.length;
-            expect(drinksLengthAfterCreate).toEqual(drinksLengthBeforeCreate+1);
-            expect(scope.drinks[scope.drinks.length-1].name).toEqualData(newDrink.name);
+            expect(drinksLengthAfterCreate).toEqual(drinksLengthBeforeCreate + 1);
+            expect(scope.drinks[scope.drinks.length - 1].name).toEqualData(newDrink.name);
         });
 
         it('should hide error after drink is created successfully', function () {
@@ -389,14 +403,14 @@ describe('MilkTea Controller', function () {
             expect(scope.drink).toEqual({});
         });
 
-        function createDrinkAndFail (drink, errors) {
+        function createDrinkAndFail(drink, errors) {
             $httpBackend.whenPOST('/drinks.json', drink).respond(422, errors);
         }
 
         it('should show drink error when creating drink already exist in the drink list', function () {
             var drinkErrors = {
-                "errors": {
-                    "name": ["has already been taken"]
+                "errors":{
+                    "name":["has already been taken"]
                 }
             };
             createDrinkAndFail(newDrink, drinkErrors);
@@ -407,8 +421,8 @@ describe('MilkTea Controller', function () {
 
         it('should show drink error when creating drink has invalid price format', function () {
             var drinkErrors = {
-                "errors": {
-                    "price": ["is not a number"]
+                "errors":{
+                    "price":["is not a number"]
                 }
             };
             createDrinkAndFail(newDrink, drinkErrors);
@@ -438,7 +452,124 @@ describe('MilkTea Controller', function () {
             scope.delete(drinksIndex);
             $httpBackend.flush();
             var drinkLengthAfterDelete = scope.drinks.length;
-            expect(drinkLengthAfterDelete).toEqual(drinksLengthBeforeDelete-1);
+            expect(drinkLengthAfterDelete).toEqual(drinksLengthBeforeDelete - 1);
+        });
+    });
+
+    describe('ToppingNewCtrl', function () {
+        var scope, $controller, toppingNewCtrl, $httpBackend;
+
+        var newTopping = {
+            "name":'new topping',
+            "price":50
+        };
+
+        beforeEach(inject(function ($rootScope, _$controller_, _$httpBackend_) {
+            scope = $rootScope.$new();
+            $controller = _$controller_;
+            $httpBackend = _$httpBackend_;
+
+            $httpBackend.whenGET('/toppings.json').
+                respond(toppings);
+
+            toppingNewCtrl = $controller(ToppingNewCtrl, {$scope:scope});
+        }));
+
+        it('should show all toppings', function () {
+            expect(scope.toppings).toEqual([]);
+            $httpBackend.flush();
+            expect(scope.toppings).toEqualData(toppings);
+        });
+
+        function createToppingAndSuccess(topping) {
+            var respondTopping = angular.copy(topping);
+            respondTopping.id = 1;
+            $httpBackend.expectPOST('/toppings.json', topping).respond(200, respondTopping);
+        }
+
+        it('can create topping', function () {
+            createToppingAndSuccess(newTopping);
+            scope.create(newTopping);
+            $httpBackend.flush();
+        });
+
+        it('should update topping list after create topping', function () {
+            $httpBackend.flush();
+            createToppingAndSuccess(newTopping);
+            var toppingsLengthBeforeCreate = scope.toppings.length;
+            scope.create(newTopping);
+            $httpBackend.flush();
+            var toppingsLengthAfterCreate = scope.toppings.length;
+            expect(toppingsLengthAfterCreate).toEqual(toppingsLengthBeforeCreate + 1);
+            expect(scope.toppings[scope.toppings.length - 1].name).toEqualData(newTopping.name);
+        });
+
+        it('should hide error after topping is created successfully', function () {
+            $httpBackend.flush();
+            createToppingAndSuccess(newTopping);
+            scope.create(newTopping);
+            $httpBackend.flush();
+            expect(scope.topping.error).toBeUndefined();
+        });
+
+        it('should reset topping model after topping is created successfully', function () {
+            $httpBackend.flush();
+            createToppingAndSuccess(newTopping);
+            scope.create(newTopping);
+            $httpBackend.flush();
+            expect(scope.topping).toEqual({});
+        });
+
+        function createToppingAndFail(topping, errors) {
+            $httpBackend.whenPOST('/toppings.json', topping).respond(422, errors);
+        }
+
+        it('should show topping error when creating topping already exist in the topping list', function () {
+            var toppingErrors = {
+                "errors":{
+                    "name":["has already been taken"]
+                }
+            };
+            createToppingAndFail(newTopping, toppingErrors);
+            scope.create(newTopping);
+            $httpBackend.flush();
+            expect(scope.topping.errors.name).toEqual(toppingErrors.errors.name);
+        });
+
+        it('should show topping error when creating topping has invalid price format', function () {
+            var toppingErrors = {
+                "errors":{
+                    "price":["is not a number"]
+                }
+            };
+            createToppingAndFail(newTopping, toppingErrors);
+            scope.create(newTopping);
+            $httpBackend.flush();
+            expect(scope.topping.errors.price).toEqual(toppingErrors.errors.price);
+        });
+
+        function deleteToppingAndSuccess(toppingId) {
+            $httpBackend.expectDELETE('/toppings/' + toppingId + '.json').respond(200);
+        }
+
+        var toppingId = 1;
+        var toppingsIndex = 0;
+
+        it('can delete topping', function () {
+            $httpBackend.flush();
+            deleteToppingAndSuccess(toppingId);
+            scope.delete(toppingsIndex);
+            $httpBackend.flush();
+        });
+
+        it('should update topping list after delete topping', function () {
+            $httpBackend.flush();
+            deleteToppingAndSuccess(toppingId);
+            var toppingsLengthBeforeDelete = scope.toppings.length;
+            scope.delete(toppingsIndex);
+            $httpBackend.flush();
+            var toppingLengthAfterDelete = scope.toppings.length;
+            expect(toppingLengthAfterDelete).toEqual(toppingsLengthBeforeDelete - 1);
         });
     })
 });

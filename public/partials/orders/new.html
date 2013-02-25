@@ -1,86 +1,99 @@
 <div class="container">
-	<form class="form-horizontal">
-		<div class="control-group" ng-class="errorStyle">
-			<label class="control-label" for="orderDatePicker">Order of :</label>
-			<div class="controls">
-				<div class="input-append">
-					<input datepicker class="input-small" type="text">
-					<button type="button" class="btn btn-primary" ng-click="create(order)">Create</button>				
-				</div>
-				<span class="help-inline">{{orderErrorMessage}}</span>
-			</div>
-		</div>
-	</form>
-
+    <form class="form-horizontal">
+        <div class="control-group" ng-class="errorStyle">
+            <label class="control-label" for="orderDatePicker">Order of :</label>
+            <div class="controls">
+                <div class="input-append">
+                    <input datepicker class="input-small" type="text">
+                    <button type="button" class="btn btn-primary" ng-click="create(order)">Create</button>
+                </div>
+                <span class="help-inline">{{orderErrorMessage}}</span>
+            </div>
+        </div>
+    </form>
     <div ng-show="isShowOrder">
-    <h4>Order of : {{order.orderDate}}</h4>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Drink</th>
-            <th>Price</th>
-            <th>Total Price</th>
-            <th>Sweet Level</th>
-            <th>Quantity</th>
-            <th>Owner</th>
-        </tr>
-        </thead>
-        <tbody ng-repeat="lineItem in order.lineItems">
-        <tr>
-            <td rowspan="{{lineItem.toppings.length + 1}}">{{$index + 1}}</td>
-            <td>{{lineItem.drink.name}}</td>
-            <td>{{lineItem.drink.price}}</td>
-            <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.totalPrice}}</td>
-            <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.sweetLevel}}</td>
-            <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.quantity}}</td>
-            <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.owner}}</td>
-        </tr>
-        <tr ng-repeat="topping in lineItem.toppings">
-            <td>{{topping.name}}</td>
-            <td>{{topping.price}}</td>
-        </tr>
-        </tbody>
-        <tbody>
-        <tr>
-            <td rowspan="{{lineItem.toppings.length + 2}}">{{order.lineItems.length + 1}}</td>
-            <td>
-                <div class="input-append">
-                    <select class="input-large" ng-model="lineItem.drink" ng-options="drink.name for drink in drinks" ng-change="calculateTotalPrice(lineItem)">
-                        <option value="">Choose Your Drink...</option>
-                    </select>
-                    <button type="button" class="btn btn-primary" ng-click="createLineItem(lineItem)">Add Item</button>
-                </div>
-            </td>
-            <td>{{lineItem.drink.price}}</td>
-            <td rowspan="{{lineItem.toppings.length + 2}}">{{lineItem.totalPrice}}</td>
-            <td rowspan="{{lineItem.toppings.length + 2}}">
-                <select class="input-mini" ng-model="lineItem.sweetLevel" ng-options="sweetLevel for sweetLevel in [1, 2, 3, 4, 5]"></select>
-            </td>
-            <td rowspan="{{lineItem.toppings.length + 2}}">
-                <input class="input-mini" ng-model="lineItem.quantity" type="text" placeholder="Quantity" ng-change="calculateTotalPrice(lineItem)">
-            </td>
-            <td rowspan="{{lineItem.toppings.length + 2}}">
-                <input class="input-medium" ng-model="lineItem.owner" type="text" placeholder="Owner">
-            </td>
-        </tr>
-        <tr ng-repeat="topping in lineItem.toppings">
-            <td>{{topping.name}}</td>
-            <td>{{topping.price}}</td>
-        </tr>
-        <tr>
-            <td>
-                <div class="input-append">
-                    <select class="input-large" ng-model="topping" ng-options="topping.name for topping in toppings">
-                        <option value="">Add Some Toppings...</option>
-                    </select>
-                    <button type="button" class="btn btn-success" ng-click="addTopping(topping)">Add Topping</button>
-                </div>
-            </td>
-            <td>{{topping.price}}</td>
-        </tr>
-        </tbody>
-    </table>
+        <h4>Order of : {{order.orderDate}}</h4>
+        <div class="alert alert-error" ng-show="lineItem.errors">
+            <h5>Oh snap!</h5>
+            <ul>
+                <li ng-show="lineItem.errors.totalPrice" ng-repeat="error in lineItem.errors.totalPrice">Total price {{error}}.</li>
+                <li ng-show="lineItem.errors.quantity" ng-repeat="error in lineItem.errors.quantity">Quantity {{error}}.</li>
+                <li ng-show="lineItem.errors.owner" ng-repeat="error in lineItem.errors.owner">Owner {{error}}.</li>
+            </ul>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Drink</th>
+                <th>Price</th>
+                <th>Total Price</th>
+                <th>Sweet Level</th>
+                <th>Quantity</th>
+                <th>Owner</th>
+            </tr>
+            </thead>
+            <tbody ng-repeat="lineItem in order.lineItems">
+            <tr>
+                <td rowspan="{{lineItem.toppings.length + 1}}">{{$index + 1}}</td>
+                <td>{{lineItem.drink.name}}</td>
+                <td>{{lineItem.drink.price}}</td>
+                <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.totalPrice}}</td>
+                <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.sweetLevel}}</td>
+                <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.quantity}}</td>
+                <td rowspan="{{lineItem.toppings.length + 1}}">{{lineItem.owner}}</td>
+            </tr>
+            <tr ng-repeat="topping in lineItem.toppings">
+                <td>{{topping.name}}</td>
+                <td>{{topping.price}}</td>
+            </tr>
+            </tbody>
+            <tbody>
+            <tr>
+                <td rowspan="{{lineItem.toppings.length + 2}}">{{order.lineItems.length + 1}}</td>
+                <td>
+                    <div class="input-append">
+                        <select class="input-large" ng-model="lineItem.drink"
+                                ng-options="drink.name for drink in drinks" ng-change="calculateTotalPrice(lineItem)">
+                            <option value="">Choose Your Drink...</option>
+                        </select>
+                        <button type="button" class="btn btn-primary" ng-click="createLineItem(lineItem)">Add Item
+                        </button>
+                    </div>
+                </td>
+                <td>{{lineItem.drink.price}}</td>
+                <td rowspan="{{lineItem.toppings.length + 2}}">{{lineItem.totalPrice}}</td>
+                <td rowspan="{{lineItem.toppings.length + 2}}">
+                    <select class="input-mini" ng-model="lineItem.sweetLevel"
+                            ng-options="sweetLevel for sweetLevel in [1, 2, 3, 4, 5]"></select>
+                </td>
+                <td rowspan="{{lineItem.toppings.length + 2}}">
+                    <input class="input-mini" ng-model="lineItem.quantity" type="text" placeholder="Quantity"
+                           ng-change="calculateTotalPrice(lineItem)">
+                </td>
+                <td rowspan="{{lineItem.toppings.length + 2}}">
+                    <input class="input-medium" ng-model="lineItem.owner" type="text" placeholder="Owner">
+                </td>
+            </tr>
+            <tr ng-repeat="topping in lineItem.toppings">
+                <td>{{topping.name}}</td>
+                <td>{{topping.price}}</td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="input-append">
+                        <select class="input-large" ng-model="topping"
+                                ng-options="topping.name for topping in toppings">
+                            <option value="">Add Some Toppings...</option>
+                        </select>
+                        <button type="button" class="btn btn-success" ng-click="addTopping(topping)">Add Topping
+                        </button>
+                    </div>
+                </td>
+                <td>{{topping.price}}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
     {{order.lineItem.length}}
 </div>

@@ -52,6 +52,12 @@ angular.module('milkteaServices', ['ngResource']).
     }).
     factory('Toppings', function ($resource) {
         return $resource('/toppings.json', {}, {
-            index:{ method:'GET', isArray:true }
+            index:{ method:'GET', isArray:true },
+            create:{ method:'POST' }
+        })
+    }).
+    factory('Topping', function ($resource) {
+        return $resource('/toppings/:id.json', {}, {
+            destroy:{ method:'DELETE' }
         })
     });

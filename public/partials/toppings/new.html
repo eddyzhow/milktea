@@ -1,0 +1,44 @@
+<div class="container">
+    <h4>Toppings :</h4>
+    <div class="alert alert-error" ng-show="topping.errors">
+        <h5>Oh snap!</h5>
+        <ul>
+            <li ng-show="topping.errors.name" ng-repeat="error in topping.errors.name">Topping name {{error}}.</li>
+            <li ng-show="topping.errors.price" ng-repeat="error in topping.errors.price">Price {{error}}.</li>
+        </ul>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Topping</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody ng-repeat="topping in toppings">
+        <tr>
+            <td>{{$index+1}}</td>
+            <td>{{topping.name}}</td>
+            <td>{{topping.price}}</td>
+            <td>
+                <button type="button" class="btn btn-danger" ng-click="delete($index)">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+        <tbody>
+        <tr>
+            <td>{{toppings.length+1}}</td>
+            <td>
+                <input class="input-large" ng-model="topping.name" type="text" placeholder="Topping Name">
+            </td>
+            <td>
+                <input class="input-mini" ng-model="topping.price" type="text" placeholder="Price">
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" ng-click="create(topping)">Add</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
